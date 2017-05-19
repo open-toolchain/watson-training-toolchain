@@ -20,22 +20,22 @@ stages:
   - type: stage
   properties:
   - name: CF_APP_NAME
-    value: undefined
+    value: ''
     type: text
   - name: APP_URL
-    value: undefined
+    value: ''
     type: text
   - name: WORKSPACE_ID
-    value: undefined
+    value: ''
     type: text
   - name: TEMP_APP_NAME
-    value: undefined
+    value: ''
     type: text
   - name: TEMP_APP_URL
-    value: undefined
+    value: ''
     type: text
   - name: DOMAIN
-    value: undefined
+    value: ''
     type: text
   jobs:
   - name: Train Conversation
