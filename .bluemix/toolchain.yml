@@ -51,7 +51,18 @@ services:
   webide:
     service_id: orion
   messaging:
-    service_id: slack    
+    service_id: slack
+  workspaces:
+    service_id: customtool
+    parameters:
+      type: Workspaces
+      lifecyclePhase: "MANAGE"
+      imageUrl: https://watson-api-explorer.mybluemix.net/images/watson-apis/Conversation.svg
+      documentationUrl: https://www.ibm.com/watson/developercloud/doc/conversation/index.html
+      name: Watson Conversation
+      dashboard_url: https://www.ibmwatsonconversation.com
+      description: Workspaces enable you to maintain separate intents, user examples, entities, and dialogs for each use or application.
+      additional-properties:    
 form:
   pipeline:
     parameters:
