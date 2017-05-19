@@ -11,6 +11,7 @@ This Watson Conversation application uses Node.js and includes a DevOps toolchai
 ---
 ### Learn more
 
+* Learn about Watson Conversation
 * [Step by step tutorial]() -- coming soon
 * [Getting started](https://bluemix.net/devops)
 * [Documentation](https://console.ng.bluemix.net/docs/services/ContinuousDelivery/index.html?pos=2)
