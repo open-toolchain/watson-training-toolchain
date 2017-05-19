@@ -74,7 +74,7 @@ services:
       dashboard_url: https://watson-api-explorer.mybluemix.net/
       description: A collection of Swagger documentation for the Watson APIs.
       additional-properties:    
-  workspaces:
+  doc:
     service_id: customtool
     parameters:
       type: Getting Started
