@@ -15,6 +15,7 @@ stages:
   - type: job
     stage: BUILD
     job: Build
+    dir_name: null
   triggers:
   - type: stage
   properties:
@@ -24,39 +25,165 @@ stages:
   - name: APP_URL
     value: undefined
     type: text
+  - name: WORKSPACE_ID
+    value: undefined
+    type: text
+  - name: TEMP_APP_NAME
+    value: undefined
+    type: text
+  - name: TEMP_APP_URL
+    value: undefined
+    type: text
+  - name: DOMAIN
+    value: undefined
+    type: text
   jobs:
-  - name: Blue-Green Deploy
+  - name: Train Conversation
     type: deployer
     target:
       region_id: ${PROD_REGION_ID}
       organization: ${PROD_ORG_NAME}
       space: ${PROD_SPACE_NAME}
       application: ${CF_APP_NAME}
+    script: |-
+      #!/bin/bash
+      #set -x
+      #CF_TRACE=true
+      export CF_APP_NAME="${CF_APP}"
+      service_name="my-conversation-service"
+      key_name="my-key"
+
+      if ! cf service $service_name ; then
+        cf create-service conversation free $service_name
+      fi
+
+      cf create-service-key $service_name $key_name
+      npm install -g json
+      jsonkey=$( cf service-key $service_name $key_name | tail -n +3 )
+      wcuser=$( echo $jsonkey | json username )
+      wcpass=$( echo $jsonkey | json password )
+      wcurl=$( echo $jsonkey | json url )
+
+      if [ -z "${WORKSPACE_ID}" ]; then
+        # Find workspace ID from previous app (if any)
+        if cf app $CF_APP_NAME; then
+          export WORKSPACE_ID=$( cf env $CF_APP_NAME | grep WORKSPACE_ID | awk '{print $2}' )
+          if [ -z "${WORKSPACE_ID}" ]; then
+            echo "Existing app has no workspace associated. Training a new one..."
+          else
+            echo "##############################################################"
+            echo "Reusing existing app workspace: WORKSPACE_ID: ${WORKSPACE_ID}"
+            echo "##############################################################"
+          fi
+        fi
+      else
+        echo "##############################################################"
+        echo "Using pre-configured workspace: WORKSPACE_ID: ${WORKSPACE_ID}"
+        echo "##############################################################"
+      fi
+      if [ -z "${WORKSPACE_ID}" ]; then
+        # Create workspace and train it
+        resp=$( curl --user $wcuser:$wcpass \
+                   -H "Content-Type: application/json" \
+                   -X POST -d @training/car_workspace.json \
+                   $wcurl/v1/workspaces?version=2017-04-21 )
+        echo $resp| json
+        export WORKSPACE_ID=$( echo $resp | json workspace_id )
+        if [ -z "${WORKSPACE_ID}" ]; then
+          echo "Failed creating new workspace..."
+          echo "If too many workspaces already, discard obsolete workspaces using: "
+          echo "https://www.ibmwatsonconversation.com"
+          echo "Select service instance:$service_name in current org&space"
+          exit 1
+        fi
+        echo "##############################################################"
+        echo "Created and trained new workspace: WORKSPACE_ID: ${WORKSPACE_ID}"
+        echo "##############################################################"
+      fi
+      resp=$( curl --user $wcuser:$wcpass -X GET \
+               $wcurl/v1/workspaces/$WORKSPACE_ID?version=2017-04-21 )
+      echo $resp| json
+      echo "Administer your workspaces at: https://www.ibmwatsonconversation.com"
+  - name: Deploy Dark
+    type: deployer
+    target:
+      region_id: ${PROD_REGION_ID}
+      organization: ${PROD_ORG_NAME}
+      space: ${PROD_SPACE_NAME}
+      application: ${CF_APP_NAME}
+    script: |-      
+      #!/bin/bash
+      #set -x
+      #CF_TRACE=true
+
+      # Compute a unique app name using the reserved CF_APP name (configured in the 
+      # deployer or from the manifest.yml file), the build number, and a 
+      # timestamp (allowing multiple deploys for the same build).
+      export TEMP_APP_NAME="${CF_APP_NAME}-${BUILD_NUMBER}-$(date +%s)"
+
+      echo "Pushing new app:$TEMP_APP_NAME"
+      cf push $TEMP_APP_NAME --no-start
+      cf set-env $TEMP_APP_NAME WORKSPACE_ID $WORKSPACE_ID
+      cf start $TEMP_APP_NAME
+      cf apps | grep $TEMP_APP_NAME
+      url=$(cf app $TEMP_APP_NAME | grep urls: | awk '{print $2}')
+      prefix="${TEMP_APP_NAME}."
+      export DOMAIN=$( echo ${url:${#prefix}} )
+      export TEMP_APP_URL="http://$url"
+      echo "##############################################################"
+      echo "Deployed new app $TEMP_APP_NAME"
+      echo "on temporary route: $TEMP_APP_URL"
+      echo "##############################################################"
+      # View logs
+      #cf logs "${TEMP_APP_NAME}" --recent
+  - name: Sanity Check
+    type: tester
     script: |
       #!/bin/bash
-      # Push app
-      if ! cf app $CF_APP; then  
-        cf push $CF_APP
-      else
-        OLD_CF_APP=${CF_APP}-OLD-$(date +"%s")
-        rollback() {
-          set +e  
-          if cf app $OLD_CF_APP; then
-            cf logs $CF_APP --recent
-            cf delete $CF_APP -f
-            cf rename $OLD_CF_APP $CF_APP
-          fi
-          exit 1
-        }
-        set -e
-        trap rollback ERR
-        cf rename $CF_APP $OLD_CF_APP
-        cf push $CF_APP
-        cf delete $OLD_CF_APP -f
-      fi
-      # Export app name and URL for use in later Pipeline jobs
-      export CF_APP_NAME="$CF_APP"
+      #set -x
+      #CF_TRACE=true
+
+      # invoke tests here
+      echo "##############################################################"
+      echo "Sanity checked new app $TEMP_APP_NAME"
+      echo "on temporary route: $TEMP_APP_URL"
+      echo "##############################################################"
+  - name: Roll Out
+    type: deployer
+    target:
+      region_id: ${PROD_REGION_ID}
+      organization: ${PROD_ORG_NAME}
+      space: ${PROD_SPACE_NAME}
+      application: ${CF_APP_NAME}
+    script: |-
+      #!/bin/bash
+      #set -x
+      #CF_TRACE=true
+
+      cf app $TEMP_APP_NAME
+
+      # Map traffic to the new version by binding to the public host.
+      # NOTE: The old version(s) is still taking traffic to avoid disruption in service.
+      cf map-route $TEMP_APP_NAME $DOMAIN -n $CF_APP_NAME
+      cf routes | { grep $TEMP_APP_NAME || true; }
+
+      # Delete the temporary route that was used for testing since it is no longer needed.
+      cf unmap-route $TEMP_APP_NAME $DOMAIN -n $TEMP_APP_NAME
+      cf delete-route $DOMAIN -n $TEMP_APP_NAME -f
+
+      # Delete the old app at this point. They are no longer needed.
+      cf delete -f -r $CF_APP_NAME
+
+      # Rename temp app now it is public
+      cf rename $TEMP_APP_NAME $CF_APP_NAME
+
+      echo "Public route bindings:"
+      cf routes | { grep $CF_APP_NAME || true; }
+      cf app $CF_APP_NAME
       export APP_URL=http://$(cf app $CF_APP_NAME | grep urls: | awk '{print $2}')
+      echo "##############################################################"
+      echo "You have successfully executed a rolling deployment of $CF_APP_NAME"
+      echo "at: $APP_URL"
+      echo "##############################################################"
       # View logs
-      #cf logs "${CF_APP}" --recent
-      
+      #cf logs "${CF_APP_NAME}" --recent
