@@ -7,7 +7,7 @@ template:
   description:
     $ref: "#/messages/template.description"
   header: '![](toolchain.svg?localize "header image")'
-  icon: icon.svg
+  icon: icon-watson.svg
   required:
     - sample-build
     - sample-repo
