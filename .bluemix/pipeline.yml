@@ -101,9 +101,11 @@ stages:
         echo "##############################################################"
       fi
       resp=$( curl --user $wcuser:$wcpass -X GET \
-               $wcurl/v1/workspaces/$WORKSPACE_ID?version=2017-04-21 )
+              $wcurl/v1/workspaces/$WORKSPACE_ID?version=2017-04-21 )
+      status=$?
       echo $resp| json
       echo "Administer your workspaces at: https://www.ibmwatsonconversation.com"
+      exit $status
   - name: Deploy Dark
     type: deployer
     target:
