@@ -13,11 +13,11 @@ template:
     - sample-repo
   info:
     git url: >-
-      [https://github.com/open-toolchain/simple-toolchain-hosted](https://github.com/open-toolchain/simple-toolchain-hosted)
+      [https://github.com/open-toolchain/watson-training-toolchain](https://github.com/open-toolchain/watson-training-toolchain)
     git branch: >-
-      [master](https://github.com/open-toolchain/simple-toolchain-hosted/tree/master)
+      [master](https://github.com/open-toolchain/watson-training-toolchain/tree/master)
 toolchain:
-  name: 'simple-toolchain-{{timestamp}}'
+  name: 'watson-conversation-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
@@ -26,7 +26,7 @@ services:
     service_id: hostedgit
     parameters:
       repo_name: '{{toolchain.name}}'
-      repo_url: 'https://github.com/open-toolchain/node-hello-world'
+      repo_url: 'https://github.com/watson-developer-cloud/conversation-simple'
       type: clone
       has_issues: true
       enable_traceability: true
@@ -50,6 +50,8 @@ services:
         execute: true
   webide:
     service_id: orion
+  messaging:
+    service_id: slack    
 form:
   pipeline:
     parameters:
