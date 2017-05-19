@@ -104,8 +104,12 @@ stages:
               $wcurl/v1/workspaces/$WORKSPACE_ID?version=2017-04-21 )
       status=$?
       echo $resp| json
-      echo "Administer your workspaces at: https://www.ibmwatsonconversation.com"
-      exit $status
+      resp_wsid=$( echo $resp | json workspace_id )
+      if [ $status -ne 0 ] || [ "$resp_wsid" != "$WORKSPACE_ID" ]; then
+        echo "Invalid workspace: $WORKSPACE_ID"
+        echo "Administer your workspaces at: https://www.ibmwatsonconversation.com"  
+        exit 1
+      fi
   - name: Deploy Dark
     type: deployer
     target:
