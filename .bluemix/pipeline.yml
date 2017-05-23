@@ -10,6 +10,14 @@ stages:
   jobs:
   - name: Build
     type: builder
+  - name: Regression Tests
+    type: tester
+    script: |-
+      #!/bin/bash
+      #set -x
+      export PATH=/opt/IBM/node-v6.7.0/bin:$PATH
+      npm install
+      npm run test
 - name: DEPLOY
   inputs:
   - type: job
