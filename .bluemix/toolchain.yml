@@ -55,11 +55,11 @@ services:
   workspaces:
     service_id: customtool
     parameters:
-      type: Workspaces
+      type: Watson Conversation
       lifecyclePhase: "MANAGE"
       imageUrl: https://watson-api-explorer.mybluemix.net/images/watson-apis/Conversation.svg
       documentationUrl: https://www.ibm.com/watson/developercloud/doc/conversation/index.html
-      name: Watson Conversation
+      name: Workspaces
       dashboard_url: https://www.ibmwatsonconversation.com
       description: Workspaces enable you to maintain separate intents, user examples, entities, and dialogs for each use or application.
       additional-properties:    
@@ -77,11 +77,11 @@ services:
   doc:
     service_id: customtool
     parameters:
-      type: Getting Started
-      lifecyclePhase: "MANAGE"
+      type: Watson Guide
+      lifecyclePhase: "CULTURE"
       imageUrl: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZmlsbD0iIzk4NTVENCIgZD0iTTI3Ljc1OSAwaC03Ljk0OGE0LjI0NiA0LjI0NiAwIDAgMC00LjI0MSA0LjI0MXY1LjQ0N0g1LjY3NWMtMy4xMjkgMC01LjY3NCAyLjU1My01LjY3NCA1LjY5MnY1LjU2MWMwIDMuMTM5IDIuNTQ4IDUuNjk0IDUuNjc0IDUuNjk0aDIuMTM5bDIuOTc1IDUuMTU0YS40MjguNDI4IDAgMCAwIC41OC4xNTQuNDI2LjQyNiAwIDAgMCAuMTU2LS41ODJsLTMuMjE4LTUuNTc2SDUuNjc1Yy0yLjY2IDAtNC44MjQtMi4xNzQtNC44MjQtNC44NDR2LTUuNTYzYzAtMi42NjggMi4xNjItNC44NDQgNC44MjItNC44NDRoMTAuOTIxYzIuNjgyIDAgNC44NjYgMi4xNzQgNC44NjYgNC44NDR2NS41NjFjMCAyLjY3LTIuMTgyIDQuODQ0LTQuODY2IDQuODQ0aC00Ljc4MmEuNDIzLjQyMyAwIDAgMC0uNDI0LjQyNGMwIC4yMzUuMTkxLjQyNi40MjYuNDI2aDQuNzgyYzMuMTUxIDAgNS43MTUtMi41NTQgNS43MTUtNS42OTR2LTUuNTYxYTUuNjQ2IDUuNjQ2IDAgMCAwLS44MTUtMi45MTZoMi41ODhhLjQyNS40MjUgMCAxIDAgLjAwMi0uODVoLTMuMjExYTUuNzA0IDUuNzA0IDAgMCAwLTQuMjc0LTEuOTI4aC0uMTc0VjQuMjM3QTMuMzkzIDMuMzkzIDAgMCAxIDE5LjgxNi44NDZoNy45NDhhMy4zOTEgMy4zOTEgMCAwIDEgMy4zODYgMy4zODl2My45ODlhMy4zOTEgMy4zOTEgMCAwIDEtMy4zODYgMy4zODloLS43MzJsLTIuNDA5IDQuMTdhLjQyMy40MjMgMCAwIDAgLjM2OS42MzdjLjE0NyAwIC4yOS0uMDc1LjM2OS0uMjEzbDIuMTYyLTMuNzQ2aC4yMzhhNC4yNDMgNC4yNDMgMCAwIDAgNC4yMzctNC4yNDFWNC4yMzJBNC4yNDMgNC4yNDMgMCAwIDAgMjcuNzU3IDBoLjAwMnoiLz48cGF0aCBmaWxsPSIjOTg1NUQ0IiBkPSJNMjQuNDg5IDUuNjA3Yy0uNTMuNTM2LS44MTYuOTg0LS44MTYgMS44MTlhLjQyMy40MjMgMCAxIDAgLjg0NiAwYzAtLjU0Ni4xNTEtLjc5NC42Mi0xLjI2OS4zOTctLjQwMi44MTEtLjgxOC45NTItMS40ODhhMS43NSAxLjc1IDAgMCAwLS4zMy0xLjQ0MSAyLjA4NSAyLjA4NSAwIDAgMC0xLjUyNS0uNzk0Yy0uNjc3LS4wMzQtMS4yODEuMTg0LTEuNjkzLjYyLS40MDIuNDMxLS41ODIgMS4wMzQtLjUwMyAxLjdhLjQzNy40MzcgMCAwIDAgLjQ3My4zNzIuNDIzLjQyMyAwIDAgMCAuMzcyLS40NzNjLS4wNS0uNDE5LjA0NS0uNzY4LjI3OC0xLjAxNC4yMzgtLjI1MS42LS4zNzcgMS4wMjctLjM1NS4zNDkuMDIuNjk0LjE5OC44OTguNDY0YS45MDIuOTAyIDAgMCAxIC4xNzMuNzQ2Yy0uMDkxLjQyNy0uMzY5LjcwOS0uNzc0IDEuMTE2bC4wMDItLjAwM3oiLz48Y2lyY2xlIGZpbGw9IiM5ODU1RDQiIGN4PSIyNC4wODUiIGN5PSI5LjQzNiIgcj0iLjU5NSIvPjxjaXJjbGUgZmlsbD0iIzk4NTVENCIgY3g9IjE1LjgwNyIgY3k9IjE4LjE2IiByPSIxLjAxOSIvPjxjaXJjbGUgZmlsbD0iIzk4NTVENCIgY3g9IjExLjE1NiIgY3k9IjE4LjE1OSIgcj0iMS4wMTkiLz48Y2lyY2xlIGZpbGw9IiM5ODU1RDQiIGN4PSI2LjUxIiBjeT0iMTguMTU5IiByPSIxLjAxOSIvPjwvc3ZnPg==
       documentationUrl: https://www.ibm.com/watson/developercloud/doc/conversation/index.html
-      name: Watson Conversation Guidance
+      name: Conversation
       dashboard_url: https://www.ibm.com/watson/developercloud/doc/conversation/index.html
       description: Overview of the IBM Watson Conversation service
       additional-properties:    
